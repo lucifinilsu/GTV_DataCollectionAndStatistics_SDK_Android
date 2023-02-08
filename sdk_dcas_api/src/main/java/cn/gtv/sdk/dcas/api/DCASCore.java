@@ -9,7 +9,7 @@ import com.sad.jetpack.v1.datamodel.api.extension.interceptor.DefaultCacheLoader
 
 import org.json.JSONObject;
 
-public class DCASCore {
+public final class DCASCore {
 
     protected static Context mContext=null;
     protected static String mServerAuthKeyV3 ="FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8";
@@ -19,6 +19,10 @@ public class DCASCore {
             mServerAuthKeyV3=serverAuthKeyV3;
             DefaultCacheLoader.initCacheLoader(mContext);
             GlobalDataModelConfig.getInstance().enableLogUtils(true);
+            String currAppProcessName=AppInfoUtil.getCurrAppProccessName(mContext);
+            if (context.getPackageName().equals(currAppProcessName)){
+                //主进程下处理
+            }
         }
     }
 
