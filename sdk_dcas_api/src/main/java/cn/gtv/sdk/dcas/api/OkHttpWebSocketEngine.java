@@ -35,8 +35,28 @@ public class OkHttpWebSocketEngine extends WebSocketListener implements IDataMod
     private IDataModelRequest dataModelRequest;
     private IOkhttpWebSocketConnectionListener connectionListener;
 
+    private boolean overSocket=true;//同tag是否重新连接。
+    private int retryTimes=2;
+    private int currRetry=0;
+
     public IOkhttpWebSocketConnectionListener getConnectionListener() {
         return connectionListener;
+    }
+
+    public void setRetryTimes(int retryTimes) {
+        this.retryTimes = retryTimes;
+    }
+
+    public void setOverSocket(boolean overSocket) {
+        this.overSocket = overSocket;
+    }
+
+    public boolean isOverSocket() {
+        return overSocket;
+    }
+
+    public int getRetryTimes() {
+        return retryTimes;
     }
 
     public void setConnectionListener(IOkhttpWebSocketConnectionListener connectionListener) {
@@ -56,6 +76,7 @@ public class OkHttpWebSocketEngine extends WebSocketListener implements IDataMod
         void onWebSocketConnectionClosed(String tag,int code, String reason);
     }
 
+
     @Override
     public void onEngineExecute(IDataModelRequest dataModelRequest, IDataModelChainOutput<String> chainOutput) throws Exception {
         this.chainOutput=chainOutput;
@@ -65,40 +86,14 @@ public class OkHttpWebSocketEngine extends WebSocketListener implements IDataMod
                 .request(dataModelRequest)
                 .dataSource(DataSource.NET)
                 ;
-        String k=dataModelRequest.tag();
-        mWebSocket=mWebSocketMap.get(k);
-        mOkHttpClient=mOkHttpClientMap.get(k);
-        if (mOkHttpClient==null){
-            mOkHttpClient = new OkHttpClient.Builder()
-                    .pingInterval(40, TimeUnit.SECONDS) // 设置 PING 帧发送间隔---包活
-                    .connectTimeout(dataModelRequest.timeout(),TimeUnit.MILLISECONDS)
-                    .build();
-            mOkHttpClientMap.put(k,mOkHttpClient);
-            if (mWebSocket!=null){
-                mWebSocket.cancel();
-                mWebSocketMap.remove(k);
-                mWebSocket=null;
-            }
-        }
-
-        if (mWebSocket==null){
-            String url=dataModelRequest.url();
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-            mOkHttpClient.newWebSocket(request,this);
-        }
-        else {
-            if (connectionListener!=null){
-                connectionListener.onWebSocketConnectionAlive(k,this,SOCKET_ALIVE_MODE_LIVE);
-            }
-        }
+        connect(false);
     }
 
 
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
         super.onOpen(webSocket, response);
+        currRetry=0;
         // WebSocket 连接建立
         mWebSocket=webSocket;
         mWebSocketMap.put(dataModelRequest.tag(),mWebSocket);
@@ -158,25 +153,97 @@ public class OkHttpWebSocketEngine extends WebSocketListener implements IDataMod
         }
     }
 
+    public boolean connect(boolean isRetry){
+        String k=dataModelRequest.tag();
+        mWebSocket=mWebSocketMap.get(k);
+        mOkHttpClient=mOkHttpClientMap.get(k);
+        if (!isRetry){
+            if (mOkHttpClient==null){
+                mOkHttpClient = new OkHttpClient.Builder()
+                        .pingInterval(40, TimeUnit.SECONDS) // 设置 PING 帧发送间隔---包活
+                        .connectTimeout(dataModelRequest.timeout(),TimeUnit.MILLISECONDS)
+                        .build();
+                mOkHttpClientMap.put(k,mOkHttpClient);
+                if (mWebSocket!=null && overSocket){
+                    mWebSocket.close(999,"客户端覆盖关闭");
+                    mWebSocket.cancel();
+                    mWebSocketMap.remove(k);
+                    mWebSocket=null;
+                }
+            }
+
+            if (mWebSocket==null){
+                String url=dataModelRequest.url();
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
+                mOkHttpClient.newWebSocket(request,this);
+            }
+            else {
+                if (connectionListener!=null){
+                    connectionListener.onWebSocketConnectionAlive(k,this,SOCKET_ALIVE_MODE_LIVE);
+                }
+            }
+        }
+        else {
+            if (mOkHttpClient==null){
+                mOkHttpClient = new OkHttpClient.Builder()
+                        .pingInterval(40, TimeUnit.SECONDS) // 设置 PING 帧发送间隔---包活
+                        .connectTimeout(dataModelRequest.timeout(),TimeUnit.MILLISECONDS)
+                        .build();
+                mOkHttpClientMap.put(k,mOkHttpClient);
+            }
+            String url=dataModelRequest.url();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            mOkHttpClient.newWebSocket(request,this);
+
+        }
+        return false;
+    }
+
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
         super.onFailure(webSocket, t, response);
         // 出错了
-        mWebSocket.cancel();
-        mWebSocketMap.remove(dataModelRequest.tag());
-        mWebSocket=null;
-        IDataModelObtainedExceptionListener exceptionListener=chainOutput.exceptionListener();
-        if (exceptionListener!=null){
-            exceptionListener.onDataObtainedException(dataModelRequest,t);
+        if(currRetry!=retryTimes){
+            try {
+                currRetry++;
+                connect(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            mWebSocket.close(998,"连接失败");
+            mWebSocket.cancel();
+            mWebSocketMap.remove(dataModelRequest.tag());
+            mOkHttpClientMap.remove(dataModelRequest.tag());
+            mWebSocket=null;
+            mOkHttpClient=null;
+            IDataModelObtainedExceptionListener exceptionListener=chainOutput.exceptionListener();
+            if (exceptionListener!=null){
+                exceptionListener.onDataObtainedException(dataModelRequest,t);
+            }
         }
 
     }
 
     @Override
     public void close(){
-        
-        mOkHttpClient.dispatcher().executorService().shutdown();
-        mOkHttpClientMap.remove(dataModelRequest.tag());
+        try {
+            mOkHttpClient.dispatcher().executorService().shutdown();
+            mWebSocket.cancel();
+            mWebSocket.close(999,"客户端主动关闭");
+            mOkHttpClient=null;
+            mWebSocket=null;
+            mOkHttpClientMap.remove(dataModelRequest.tag());
+            mWebSocketMap.remove(dataModelRequest.tag());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override

@@ -11,6 +11,18 @@ public class WebSocketDataClient extends DataClient<WebSocketDataClient> impleme
 
     private OkHttpWebSocketEngine.IOkhttpWebSocketConnectionListener connectionListener;
     private OkHttpWebSocketEngine engine;
+    private boolean overSocket=true;//同tag是否重新连接。
+    private int retryTimes=2;
+
+    public WebSocketDataClient retryTimes(int retryTimes) {
+        this.retryTimes = retryTimes;
+        return this;
+    }
+
+    public WebSocketDataClient overSocket(boolean overSocket){
+        this.overSocket=overSocket;
+        return this;
+    }
 
     private WebSocketDataClient(OkHttpWebSocketEngine.IOkhttpWebSocketConnectionListener connectionListener){
         super();
@@ -30,10 +42,20 @@ public class WebSocketDataClient extends DataClient<WebSocketDataClient> impleme
         if (internalLog){
             dataModelProducer.addInputInterceptor(logInterceptor).addOutputInterceptor(logInterceptor);
         }
+        engine.setOverSocket(this.overSocket);
+        engine.setRetryTimes(this.retryTimes);
         dataModelProducer
                 .request(request)
                 .engine(engine);
         return dataModelProducer;
+    }
+
+    @Override
+    public boolean connect(boolean isRetry) {
+        if (engine!=null){
+            return engine.connect(isRetry);
+        }
+        return false;
     }
 
     @Override
