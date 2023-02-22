@@ -8,15 +8,14 @@ import com.sad.jetpack.v1.datamodel.api.IDataModelObtainedCallback;
 import com.sad.jetpack.v1.datamodel.api.IDataModelObtainedExceptionListener;
 import com.sad.jetpack.v1.datamodel.api.IDataModelRequest;
 import com.sad.jetpack.v1.datamodel.api.IDataModelResponse;
-import com.sad.jetpack.v1.datamodel.api.utils.LogcatUtils;
+import com.sad.jetpack.v1.datamodel.api.extension.client.socket.ISocketMessenger;
+import com.sad.jetpack.v1.datamodel.api.extension.client.socket.OkHttpWebSocketEngine;
+import com.sad.jetpack.v1.datamodel.api.extension.client.socket.WebSocketDataClient;
 
 import org.json.JSONObject;
 
 import cn.gtv.sdk.dcas.api.DCASCore;
-import cn.gtv.sdk.dcas.api.HttpDataClient;
-import cn.gtv.sdk.dcas.api.IWebSocketMessenger;
-import cn.gtv.sdk.dcas.api.OkHttpWebSocketEngine;
-import cn.gtv.sdk.dcas.api.WebSocketDataClient;
+import cn.gtv.sdk.dcas.api.HttpDJDataClient;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,11 +30,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void testHttp(){
-        HttpDataClient.newInstance("")
+        HttpDJDataClient.newInstance(getApplicationContext(),"")
                 .url("")
+                .log(true)
                 .params(new JSONObject())
                 .method(IDataModelRequest.Method.GET)
-                .dataModelProducer(getApplicationContext(),"test123",true)
+                .dataModelProducer("test123")
                 .callback(new IDataModelObtainedCallback<String>() {
                     @Override
                     public void onDataObtainedCompleted(IDataModelResponse<String> response) {
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private void testWebSocket(){
         WebSocketDataClient.newInstance(new OkHttpWebSocketEngine.IOkhttpWebSocketConnectionListener() {
                     @Override
-                    public void onWebSocketConnectionAlive(String tag,IWebSocketMessenger messenger, int socketAliveMode) {
+                    public void onWebSocketConnectionAlive(String tag, ISocketMessenger messenger, int socketAliveMode) {
                         if (socketAliveMode==OkHttpWebSocketEngine.SOCKET_ALIVE_MODE_INIT){
                             messenger.sendMsg("第一次连接到服务端,我先发一条信息给服务端");
                         }
@@ -72,8 +72,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .url("")
+                .log(true)
                 .params(new JSONObject())
-                .dataModelProducer(getApplicationContext(),"test320",true)
+                .dataModelProducer("test320")
                 .callback(new IDataModelObtainedCallback<String>() {
                     @Override
                     public void onDataObtainedCompleted(IDataModelResponse<String> response) {

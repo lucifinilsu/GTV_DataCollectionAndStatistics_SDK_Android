@@ -1,5 +1,9 @@
 package cn.gtv.sdk.dcas.api;
 
+import static android.content.Context.ACTIVITY_SERVICE;
+import static android.content.Context.TELEPHONY_SERVICE;
+import static android.content.Context.WIFI_SERVICE;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Application;
@@ -28,7 +32,7 @@ public class DeviceTools {
     public static String getPhone_IMEI(Context context) {
         String s = "";
         try {
-            TelephonyManager manager = (TelephonyManager)context.getSystemService("phone");
+            TelephonyManager manager = (TelephonyManager)context.getSystemService(TELEPHONY_SERVICE);
             s=manager.getDeviceId();
         } catch(Exception localException1) {
         }
@@ -39,7 +43,7 @@ public class DeviceTools {
     public static String getSIM_IMEI(Context context) {
         String s = "";
         try {
-            TelephonyManager manager = (TelephonyManager)context.getSystemService("phone");
+            TelephonyManager manager = (TelephonyManager)context.getSystemService(TELEPHONY_SERVICE);
             s=manager.getSimSerialNumber();
         } catch(Exception localException1) {
         }
@@ -50,7 +54,7 @@ public class DeviceTools {
     public static String getPhone_IMSI(Context context) {
         String s = "";
         try {
-            TelephonyManager manager = (TelephonyManager)context.getSystemService("phone");
+            TelephonyManager manager = (TelephonyManager)context.getSystemService(TELEPHONY_SERVICE);
             s=manager.getSubscriberId();
         } catch(Exception localException1) {
         }
@@ -60,7 +64,7 @@ public class DeviceTools {
     public static String getSIM_NAME(Context context) {
         String s = "";
         try {
-            TelephonyManager manager = (TelephonyManager)context.getSystemService("phone");
+            TelephonyManager manager = (TelephonyManager)context.getSystemService(TELEPHONY_SERVICE);
             s=manager.getSimOperatorName();
         } catch(Exception localException1) {
         }
@@ -71,7 +75,7 @@ public class DeviceTools {
     public static String getSIM_NUM(Context context) {
         String s = "";
         try {
-            TelephonyManager manager = (TelephonyManager)context.getSystemService("phone");
+            TelephonyManager manager = (TelephonyManager)context.getSystemService(TELEPHONY_SERVICE);
             s=manager.getLine1Number();
         } catch(Exception localException1) {
         }
@@ -99,7 +103,7 @@ public class DeviceTools {
     public static String getMAC(Context context) {
         String macAddress = "";
         try {
-            WifiManager wifiMgr = (WifiManager)context.getSystemService("wifi");
+            WifiManager wifiMgr = (WifiManager)context.getSystemService(WIFI_SERVICE);
             WifiInfo info = wifiMgr == null ? null : wifiMgr.getConnectionInfo();
             if(info != null) {
                 macAddress = info.getMacAddress();
@@ -114,7 +118,7 @@ public class DeviceTools {
     public static long getAvaliableMEM(Context context) {
         long m = 0x0;
         try{
-        	ActivityManager _ActivityManager = (ActivityManager)context.getSystemService("activity");
+        	ActivityManager _ActivityManager = (ActivityManager)context.getSystemService(ACTIVITY_SERVICE);
             ActivityManager.MemoryInfo minfo = new ActivityManager.MemoryInfo();
             _ActivityManager.getMemoryInfo(minfo);
             System.out.println(minfo.availMem);
@@ -177,7 +181,7 @@ public class DeviceTools {
     }*/
     public static HashMap<String, String> getPhoneInfo(Context context) {
         HashMap<String, String> info = new HashMap<String, String>();
-        TelephonyManager manager = (TelephonyManager)context.getSystemService("phone");
+        TelephonyManager manager = (TelephonyManager)context.getSystemService(TELEPHONY_SERVICE);
         String p_model = getPhone_Model(context);
         String p_system = getPhone_System(context);
         String p_imei = getPhone_IMEI(context);
@@ -211,7 +215,7 @@ public class DeviceTools {
     
     public static String getPhoneInfoToUrlParams(Context context){
     	String p="";
-    	TelephonyManager manager = (TelephonyManager)context.getSystemService("phone");
+    	TelephonyManager manager = (TelephonyManager)context.getSystemService(TELEPHONY_SERVICE);
         String p_model = getPhone_Model(context);
         String p_system = getPhone_System(context);
         String p_imei = getPhone_IMEI(context);
