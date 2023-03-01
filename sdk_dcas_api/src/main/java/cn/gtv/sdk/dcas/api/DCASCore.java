@@ -30,37 +30,4 @@ public final class DCASCore {
     }
 
 
-    private static JSONObject setupBaseDeviceInfoJson(Context context,JSONObject jsonObject){
-        try {
-            jsonObject.put("sys_os", "Android");
-            jsonObject.put("sys_os_version", DeviceTools.getPhone_System(context)+"");
-            jsonObject.put("device_model",DeviceTools.getPhone_Model(context)+"");
-            jsonObject.put("device_manufacturer", Build.MANUFACTURER+"");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-    private static JSONObject setupBaseAppInfoJson(Context context,JSONObject jsonObject){
-        try {
-            jsonObject.put("app_version_code", AppInfoUtil.getVersionCode(context)+"");
-            jsonObject.put("app_version_name", AppInfoUtil.getVersionName(context)+"");
-            jsonObject.put("device_model",DeviceTools.getPhone_Model(context)+"");
-            jsonObject.put("device_manufacturer", Build.MANUFACTURER+"");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    private static JSONObject createBaseJson(Context context){
-        JSONObject jsonObject=new JSONObject();
-        try {
-            setupBaseDeviceInfoJson(context,jsonObject);
-            setupBaseAppInfoJson(context,jsonObject);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
 }
