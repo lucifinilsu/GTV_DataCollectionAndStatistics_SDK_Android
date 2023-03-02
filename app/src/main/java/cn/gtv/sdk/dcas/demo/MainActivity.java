@@ -15,7 +15,9 @@ import com.sad.jetpack.v1.datamodel.api.extension.client.socket.WebSocketDataCli
 import org.json.JSONObject;
 
 import cn.gtv.sdk.dcas.api.DCASCore;
+import cn.gtv.sdk.dcas.api.DCASTrackerImpl;
 import cn.gtv.sdk.dcas.api.HttpDJDataClient;
+import cn.gtv.sdk.dcas.api.TrackerDataCreator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +29,14 @@ public class MainActivity extends AppCompatActivity {
         //LogcatUtils.e("本机局域网IP:"+IPCServer.getLocalIP());
         testServerSocket();
 
+    }
+
+    private void testDCAS(){
+        DCASTrackerImpl.newBuilder(this)
+                .event("hit","article")
+                .detail(new JSONObject())
+                .build()
+                .post("xxxx");
     }
 
     private void testHttp(){

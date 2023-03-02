@@ -17,7 +17,7 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
         this.context=context;
     }
 
-    public static ITacker newInstance(Context context){
+    public static ITacker.Builder newBuilder(Context context){
         return new DCASTrackerImpl(context);
     }
 
