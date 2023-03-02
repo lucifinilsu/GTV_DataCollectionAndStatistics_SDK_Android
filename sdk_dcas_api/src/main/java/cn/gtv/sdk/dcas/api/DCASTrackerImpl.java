@@ -11,6 +11,7 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
     private JSONObject eventJson=new JSONObject();
     private JSONObject detailJson =new JSONObject();
     private Context context;
+    private String tck="dcas_tracker";
 
     private DCASTrackerImpl(){}
     private DCASTrackerImpl(Context context){
@@ -22,6 +23,21 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
     }
 
     @Override
+    public JSONObject event() {
+        return this.eventJson;
+    }
+
+    @Override
+    public JSONObject detail() {
+        return this.detailJson;
+    }
+
+    @Override
+    public String tag() {
+        return this.tck;
+    }
+
+    @Override
     public void post(String serverToken) {
         JSONObject data=TrackerDataCreator.createTrackerData(context,serverToken,eventJson, detailJson);
         HttpDJDataClient.newInstance(context,serverToken)
@@ -29,7 +45,7 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
                 .url("")
                 .params(data)
                 .method(IDataModelRequest.Method.POST)
-                .dataModelProducer("dcas_tracker")
+                .dataModelProducer(tck)
                 .execute()
                 ;
     }
@@ -61,6 +77,12 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
     @Override
     public Builder detail(JSONObject detailJson) {
         this.detailJson=detailJson;
+        return this;
+    }
+
+    @Override
+    public Builder tag(String tag) {
+        this.tck=tag;
         return this;
     }
 
