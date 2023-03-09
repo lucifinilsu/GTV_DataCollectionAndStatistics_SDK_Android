@@ -75,7 +75,6 @@ public class TrackerDataCreator {
         JSONObject info=new JSONObject();
         try {
             info.put("token",serverToken);
-            info.put("client","APP");
             setupBaseDeviceInfoJson(context,info);
             setupBaseAppInfoJson(context,info);
         }catch (Exception e){
@@ -103,6 +102,7 @@ public class TrackerDataCreator {
             jsonObject.put("device_model",DeviceTools.getPhone_Model(context)+"");
             jsonObject.put("device_manufacturer", Build.MANUFACTURER+"");
             jsonObject.put("product",DCASCore.globalConfig.getProduct());
+            jsonObject.put("client",DCASCore.globalConfig.getClient());
         }catch (Exception e){
             e.printStackTrace();
         }
