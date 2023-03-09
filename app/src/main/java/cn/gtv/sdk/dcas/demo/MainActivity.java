@@ -17,6 +17,8 @@ import org.json.JSONObject;
 import cn.gtv.sdk.dcas.api.DCASCore;
 import cn.gtv.sdk.dcas.api.DCASTrackerImpl;
 import cn.gtv.sdk.dcas.api.HttpDJDataClient;
+import cn.gtv.sdk.dcas.api.IServerTokenConsumer;
+import cn.gtv.sdk.dcas.api.IServerTokenFactory;
 import cn.gtv.sdk.dcas.api.TrackerDataCreator;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,7 +27,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DCASCore.init(getApplicationContext(),"FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8",true);
+        DCASCore.init(getApplicationContext(),"FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8",true)
+                .serverTokenFactory(new IServerTokenFactory() {
+                    @Override
+                    public void onCreateServerToken(IServerTokenConsumer consumer) {
+                        String serverToken="xxxx";
+                        consumer.optServerToken(serverToken);
+                    }
+                })
+        ;
         //LogcatUtils.e("本机局域网IP:"+IPCServer.getLocalIP());
         testServerSocket();
 
@@ -36,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 .event("hit","article")
                 .detail(new JSONObject())
                 .build()
-                .post("xxxx");
+                .post();
     }
 
     private void testHttp(){

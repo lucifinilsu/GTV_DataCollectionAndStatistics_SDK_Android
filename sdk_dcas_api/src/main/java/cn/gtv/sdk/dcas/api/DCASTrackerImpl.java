@@ -12,7 +12,7 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
     private JSONObject detailJson =new JSONObject();
     private Context context;
     private String tck="dcas_tracker";
-
+    private IServerTokenFactory serverTokenFactory= DCASCore.globalConfig.getServerTokenFactory();
     private DCASTrackerImpl(){}
     private DCASTrackerImpl(Context context){
         this.context=context;
@@ -38,7 +38,23 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
     }
 
     @Override
-    public void post(String serverToken) {
+    public IServerTokenFactory serverTokenFactory() {
+        return this.serverTokenFactory;
+    }
+
+    @Override
+    public void post() {
+        if (serverTokenFactory!=null){
+            serverTokenFactory.onCreateServerToken(new IServerTokenConsumer() {
+                @Override
+                public void optServerToken(String serverToken) {
+                    doPost(serverToken);
+                }
+            });
+        }
+    }
+
+    private void doPost(String serverToken) {
         JSONObject data=TrackerDataCreator.createTrackerData(context,serverToken,eventJson, detailJson);
         HttpDJDataClient.newInstance(context,serverToken)
                 .log(true)
@@ -87,7 +103,14 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
     }
 
     @Override
+    public Builder serverFactory(IServerTokenFactory serverTokenFactory) {
+        this.serverTokenFactory=serverTokenFactory;
+        return this;
+    }
+
+    @Override
     public ITacker build() {
         return this;
     }
+
 }

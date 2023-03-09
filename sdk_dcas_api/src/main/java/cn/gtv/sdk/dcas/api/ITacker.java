@@ -10,7 +10,9 @@ public interface ITacker {
 
     String tag();
 
-    void post(String serverToken);
+    IServerTokenFactory serverTokenFactory();
+
+    void post();
 
     Builder toBuilder();
 
@@ -23,6 +25,8 @@ public interface ITacker {
         Builder detail(JSONObject detailJson);
 
         Builder tag(String tag);
+
+        Builder serverFactory(IServerTokenFactory serverTokenFactory);
 
         ITacker build();
     }

@@ -12,11 +12,12 @@ import org.json.JSONObject;
 public final class DCASCore {
 
     protected static Context mContext=null;
-    protected static String mServerAuthKeyV3 ="FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8";
-    public static void init(Context context,String serverAuthKeyV3,boolean privacyAgree){
+    public static GlobalConfig globalConfig=new GlobalConfig();
+    public static GlobalConfig init(Context context,String serverAuthKeyV3,boolean privacyAgree){
+        globalConfig=new GlobalConfig();
         if (context==null && mContext==null){
             mContext=context;
-            mServerAuthKeyV3=serverAuthKeyV3;
+            globalConfig.serverAuthKeyV3(serverAuthKeyV3);
             DefaultCacheLoader.initCacheLoader(mContext);
             GlobalDataModelConfig.getInstance().enableLogUtils(true);
             if (privacyAgree){
@@ -25,7 +26,31 @@ public final class DCASCore {
                     //主进程下处理
                 }
             }
+        }
 
+        return globalConfig;
+    }
+
+    public static class GlobalConfig{
+
+        private IServerTokenFactory serverTokenFactory;
+        private String serverAuthKeyV3="FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8";
+        public GlobalConfig serverTokenFactory(IServerTokenFactory serverTokenFactory){
+            this.serverTokenFactory=serverTokenFactory;
+            return this;
+        }
+
+        public GlobalConfig serverAuthKeyV3(String serverAuthKeyV3){
+            this.serverAuthKeyV3=serverAuthKeyV3;
+            return this;
+        }
+
+        public IServerTokenFactory getServerTokenFactory() {
+            return serverTokenFactory;
+        }
+
+        public String getServerAuthKeyV3() {
+            return serverAuthKeyV3;
         }
     }
 

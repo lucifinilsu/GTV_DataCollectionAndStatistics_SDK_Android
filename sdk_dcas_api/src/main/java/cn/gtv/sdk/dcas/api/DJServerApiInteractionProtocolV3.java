@@ -117,7 +117,7 @@ public class DJServerApiInteractionProtocolV3 implements IDataModelInterceptorIn
                 i++;
             }
         });
-        String keyPair="key="+ DCASCore.mServerAuthKeyV3;
+        String keyPair="key="+ DCASCore.globalConfig.getServerAuthKeyV3();
         signOrgStringArray[sortMap.size()]=keyPair;
         /*String org= StringUtils.join(signOrgStringArray,sp);*/
         StringBuilder sb = new StringBuilder();
@@ -129,7 +129,7 @@ public class DJServerApiInteractionProtocolV3 implements IDataModelInterceptorIn
         }
         String org= sb.toString();
         //LogPrinterUtils.e(">>>待签名的参数："+org);
-        return doHMAC_SHA256(org, DCASCore.mServerAuthKeyV3);
+        return doHMAC_SHA256(org, DCASCore.globalConfig.getServerAuthKeyV3());
     }
     private String doHMAC_SHA256(String data,String key) throws Exception {
         Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
