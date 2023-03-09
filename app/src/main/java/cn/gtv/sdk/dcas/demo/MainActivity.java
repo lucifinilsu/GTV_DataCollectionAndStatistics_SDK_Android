@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void testDCAS(){
-        DCASTrackerImpl.newBuilder(this)
+        DCASTrackerImpl.newBuilder(this.getApplicationContext())
                 .event("hit","article")
                 .detail(new JSONObject())
                 .build()

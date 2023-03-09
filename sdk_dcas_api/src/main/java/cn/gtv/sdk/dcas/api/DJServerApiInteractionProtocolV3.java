@@ -88,7 +88,7 @@ public class DJServerApiInteractionProtocolV3 implements IDataModelInterceptorIn
         parametersMap.put("ts", useTSNum ?ts:hex_ts);
         parametersMap.put("nonce",nonce);
         parametersMap.put("device","Android");
-        parametersMap.put("ver", getVersionCode(DCASCore.mContext));
+        parametersMap.put("ver", getVersionCode(context));
         parametersMap.put("token",token);
         if (p!=null){
             Iterator<String> ks=p.keys();

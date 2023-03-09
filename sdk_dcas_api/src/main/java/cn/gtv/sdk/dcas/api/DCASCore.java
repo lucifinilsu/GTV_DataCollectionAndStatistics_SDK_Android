@@ -14,17 +14,21 @@ public final class DCASCore {
     protected static Context mContext=null;
     public static GlobalConfig globalConfig=new GlobalConfig();
     public static GlobalConfig init(Context context,String serverAuthKeyV3,boolean privacyAgree){
-        globalConfig=new GlobalConfig();
-        if (context==null && mContext==null){
+        if (globalConfig==null){
+            globalConfig=new GlobalConfig();
+        }
+        if (context!=null && mContext==null){
             mContext=context;
-            globalConfig.serverAuthKeyV3(serverAuthKeyV3);
+        }
+        globalConfig.serverAuthKeyV3(serverAuthKeyV3);
+        if (mContext!=null){
             DefaultCacheLoader.initCacheLoader(mContext);
-            GlobalDataModelConfig.getInstance().enableLogUtils(true);
-            if (privacyAgree){
-                String currAppProcessName=AppInfoUtil.getCurrAppProccessName(mContext);
-                if (context.getPackageName().equals(currAppProcessName)){
-                    //主进程下处理
-                }
+        }
+        GlobalDataModelConfig.getInstance().enableLogUtils(true);
+        if (privacyAgree){
+            String currAppProcessName=AppInfoUtil.getCurrAppProccessName(mContext);
+            if (context.getPackageName().equals(currAppProcessName)){
+                //主进程下处理
             }
         }
 
