@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         DCASCore.init(getApplicationContext(),"FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8",true)
+                .product("DJGZ")
                 .serverTokenFactory(new IServerTokenFactory() {
                     @Override
                     public void onCreateServerToken(IServerTokenConsumer consumer) {
@@ -37,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
                 })
         ;
         //LogcatUtils.e("本机局域网IP:"+IPCServer.getLocalIP());
-        testServerSocket();
+        //testServerSocket();
+        testDCAS();
 
     }
 

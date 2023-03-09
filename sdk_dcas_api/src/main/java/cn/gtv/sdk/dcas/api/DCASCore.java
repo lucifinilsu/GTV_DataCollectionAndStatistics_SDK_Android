@@ -35,6 +35,15 @@ public final class DCASCore {
 
         private IServerTokenFactory serverTokenFactory;
         private String serverAuthKeyV3="FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8";
+        private String product="";
+        public GlobalConfig product(String product){
+            this.product=product;
+            return this;
+        }
+        public String getProduct() {
+            return product;
+        }
+
         public GlobalConfig serverTokenFactory(IServerTokenFactory serverTokenFactory){
             this.serverTokenFactory=serverTokenFactory;
             return this;

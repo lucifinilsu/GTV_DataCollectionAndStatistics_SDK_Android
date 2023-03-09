@@ -102,6 +102,7 @@ public class TrackerDataCreator {
             jsonObject.put("client_version", AppInfoUtil.getVersionName(context)+"");
             jsonObject.put("device_model",DeviceTools.getPhone_Model(context)+"");
             jsonObject.put("device_manufacturer", Build.MANUFACTURER+"");
+            jsonObject.put("product",DCASCore.globalConfig.getProduct());
         }catch (Exception e){
             e.printStackTrace();
         }
