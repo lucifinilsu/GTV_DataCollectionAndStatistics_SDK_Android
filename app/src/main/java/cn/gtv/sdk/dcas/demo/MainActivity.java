@@ -27,12 +27,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DCASCore.init(getApplicationContext(),"FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8",true)
+        DCASCore.init(getApplicationContext(),"FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8","f@aix+xk7du0*dh$98-w",true)
                 .product("DJGZ")
                 .serverTokenFactory(new IServerTokenFactory() {
                     @Override
                     public void onCreateServerToken(IServerTokenConsumer consumer) {
-                        String serverToken="xxxx";
+                        String serverToken="ac12ac23ca13ca31ac31ac31ac52ac32ac12ac23ca13ca31ac31ac31ac52ac32";
                         consumer.optServerToken(serverToken);
                     }
                 })

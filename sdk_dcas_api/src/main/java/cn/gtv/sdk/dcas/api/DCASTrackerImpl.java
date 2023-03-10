@@ -59,18 +59,25 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
     private void doPost(String serverToken) {
         JSONObject data=TrackerDataCreator.createTrackerData(context,serverToken,eventJson, detailJson);
         try {
-            LogcatUtils.e("------------->提交数据："+data.toString(4));
-        } catch (JSONException e) {
+            HttpDCASDataClient.newInstance(context,serverToken)
+                    .log(true)
+                    .url("https://eventlog-api.gzstv.com/data-upload/submit")
+                    .params(data.toString())
+                    .method(IDataModelRequest.Method.POST)
+                    .dataModelProducer(tck)
+                    .execute()
+            ;
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        HttpDJDataClient.newInstance(context,serverToken)
+        /*HttpDJDataClient.newInstance(context,serverToken)
                 .log(true)
                 .url("")
                 .params(data.toString())
                 .method(IDataModelRequest.Method.POST)
                 .dataModelProducer(tck)
                 .execute()
-                ;
+                ;*/
     }
 
     @Override

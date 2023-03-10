@@ -13,14 +13,14 @@ public final class DCASCore {
 
     protected static Context mContext=null;
     public static GlobalConfig globalConfig=new GlobalConfig();
-    public static GlobalConfig init(Context context,String serverAuthKeyV3,boolean privacyAgree){
+    public static GlobalConfig init(Context context,String serverAuthKeyV3,String serverAuthKeyV2,boolean privacyAgree){
         if (globalConfig==null){
             globalConfig=new GlobalConfig();
         }
         if (context!=null && mContext==null){
             mContext=context;
         }
-        globalConfig.serverAuthKeyV3(serverAuthKeyV3);
+        globalConfig.serverAuthKeyV3(serverAuthKeyV3).serverAuthKeyV2(serverAuthKeyV2);
         if (mContext!=null){
             DefaultCacheLoader.initCacheLoader(mContext);
         }
@@ -39,6 +39,7 @@ public final class DCASCore {
 
         private IServerTokenFactory serverTokenFactory;
         private String serverAuthKeyV3="FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8";
+        private String serverAuthKeyV2="f@aix+xk7du0*dh$98-w";
         private String product="";
         private String client="APP";
 
@@ -74,6 +75,15 @@ public final class DCASCore {
 
         public String getServerAuthKeyV3() {
             return serverAuthKeyV3;
+        }
+
+        public GlobalConfig serverAuthKeyV2(String serverAuthKeyV2){
+            this.serverAuthKeyV2=serverAuthKeyV2;
+            return this;
+        }
+
+        public String getServerAuthKeyV2() {
+            return serverAuthKeyV2;
         }
     }
 
