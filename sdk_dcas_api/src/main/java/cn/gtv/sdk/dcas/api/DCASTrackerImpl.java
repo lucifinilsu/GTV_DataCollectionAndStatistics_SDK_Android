@@ -93,10 +93,11 @@ public class DCASTrackerImpl implements ITacker,ITacker.Builder{
     }
 
     @Override
-    public Builder event(String type, String target) {
+    public Builder event(String type, String target,String id) {
         try {
             this.eventJson.put("type",type);
             this.eventJson.put("target",target);
+            this.eventJson.put("id",id);
         }catch (Exception e){
             e.printStackTrace();
         }

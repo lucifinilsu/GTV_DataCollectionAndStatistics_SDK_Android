@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void testDCAS(){
         DCASTrackerImpl.newBuilder(this.getApplicationContext())
-                .event("hit","article")
+                .event("hit","article","xxcscascascacac")
                 .detail(new JSONObject())
                 .build()
                 .post();
@@ -81,6 +81,11 @@ public class MainActivity extends AppCompatActivity {
                         if (socketAliveMode==OkHttpWebSocketEngine.SOCKET_ALIVE_MODE_INIT){
                             messenger.sendMsg("第一次连接到服务端,我先发一条信息给服务端");
                         }
+                    }
+
+                    @Override
+                    public void onWebSocketMessageReceived(String tag, ISocketMessenger messenger, String text, int socketAliveMode) {
+
                     }
 
                     @Override

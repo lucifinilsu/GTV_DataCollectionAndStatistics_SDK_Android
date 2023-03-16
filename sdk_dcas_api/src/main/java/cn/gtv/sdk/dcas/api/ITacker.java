@@ -20,7 +20,7 @@ public interface ITacker {
 
         Builder event(JSONObject eventJson);
 
-        Builder event(String type,String target);
+        Builder event(String type,String target,String id);
 
         Builder detail(JSONObject detailJson);
 

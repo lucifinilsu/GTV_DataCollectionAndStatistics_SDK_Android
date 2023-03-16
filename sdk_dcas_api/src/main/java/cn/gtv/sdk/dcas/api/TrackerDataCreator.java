@@ -43,8 +43,8 @@ public class TrackerDataCreator {
      *     },
      */
 
-    public static JSONObject createTrackerData(Context context, String serverToken, String type, String target, JSONObject detailJson){
-        JSONObject eventJson=createEventJson(context,type,target);
+    public static JSONObject createTrackerData(Context context, String serverToken, String type, String target,String id, JSONObject detailJson){
+        JSONObject eventJson=createEventJson(context,type,target,id);
         return createTrackerData(context,serverToken,eventJson,detailJson);
     }
     public static JSONObject createTrackerData(Context context,String serverToken,JSONObject evenJson,JSONObject detailJson){
@@ -60,11 +60,12 @@ public class TrackerDataCreator {
         return trackerData;
     }
 
-    public static JSONObject createEventJson(Context context,String type,String target){
+    public static JSONObject createEventJson(Context context,String type,String target,String id){
         JSONObject event=new JSONObject();
         try {
             event.put("type",type);
             event.put("target",target);
+            event.put("id",id);
         }catch (Exception e){
             e.printStackTrace();
         }
