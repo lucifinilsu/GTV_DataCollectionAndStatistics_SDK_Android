@@ -3,6 +3,7 @@ buildscript {
     ext.compileSdk = 32
     ext.minSdk = 21
     ext.targetSdk = 32
+    ext.room_version='2.3.0'
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.2'

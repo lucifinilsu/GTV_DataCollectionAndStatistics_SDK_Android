@@ -1,8 +1,10 @@
 package cn.gtv.sdk.dcas.demo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.sad.jetpack.v1.datamodel.api.IDataModelObtainedCallback;
 import com.sad.jetpack.v1.datamodel.api.IDataModelObtainedExceptionListener;
@@ -14,12 +16,16 @@ import com.sad.jetpack.v1.datamodel.api.extension.client.socket.WebSocketDataCli
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 import cn.gtv.sdk.dcas.api.DCASCore;
 import cn.gtv.sdk.dcas.api.DCASTrackerImpl;
+import cn.gtv.sdk.dcas.api.EventsManager;
 import cn.gtv.sdk.dcas.api.HttpDJDataClient;
 import cn.gtv.sdk.dcas.api.IServerTokenConsumer;
 import cn.gtv.sdk.dcas.api.IServerTokenFactory;
 import cn.gtv.sdk.dcas.api.TrackerDataCreator;
+import cn.gtv.sdk.dcas.api.db.Event;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,12 +33,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DCASCore.init(getApplicationContext(),"FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8","f@aix+xk7du0*dh$98-w",true)
+        DCASCore.init(getApplicationContext(), "FpTx5RtXUftP4l-kTGtHKCCVS8vX86_tEkf7jgS1Ml8", "f@aix+xk7du0*dh$98-w", true)
                 .product("DJGZ")
                 .serverTokenFactory(new IServerTokenFactory() {
                     @Override
                     public void onCreateServerToken(IServerTokenConsumer consumer) {
-                        String serverToken="ac12ac23ca13ca31ac31ac31ac52ac32ac12ac23ca13ca31ac31ac31ac52ac32";
+                        String serverToken = "ac12ac23ca13ca31ac31ac31ac52ac32ac12ac23ca13ca31ac31ac31ac52ac32";
                         consumer.optServerToken(serverToken);
                     }
                 })
@@ -41,18 +47,19 @@ public class MainActivity extends AppCompatActivity {
         //testServerSocket();
         testDCAS();
 
+        testDb();
     }
 
-    private void testDCAS(){
+    private void testDCAS() {
         DCASTrackerImpl.newBuilder(this.getApplicationContext())
-                .event("hit","article","xxcscascascacac")
+                .event("hit", "article", "xxcscascascacac")
                 .detail(new JSONObject())
                 .build()
                 .post();
     }
 
-    private void testHttp(){
-        HttpDJDataClient.newInstance(getApplicationContext(),"")
+    private void testHttp() {
+        HttpDJDataClient.newInstance(getApplicationContext(), "")
                 .url("")
                 .log(true)
                 .params(new JSONObject())
@@ -74,11 +81,11 @@ public class MainActivity extends AppCompatActivity {
         ;
     }
 
-    private void testWebSocket(){
+    private void testWebSocket() {
         WebSocketDataClient.newInstance(new OkHttpWebSocketEngine.IOkhttpWebSocketConnectionListener() {
                     @Override
                     public void onWebSocketConnectionAlive(String tag, ISocketMessenger messenger, int socketAliveMode) {
-                        if (socketAliveMode==OkHttpWebSocketEngine.SOCKET_ALIVE_MODE_INIT){
+                        if (socketAliveMode == OkHttpWebSocketEngine.SOCKET_ALIVE_MODE_INIT) {
                             messenger.sendMsg("第一次连接到服务端,我先发一条信息给服务端");
                         }
                     }
@@ -117,11 +124,53 @@ public class MainActivity extends AppCompatActivity {
                 .execute();
     }
 
-    public void testServerSocket(){
+    public void testServerSocket() {
         //IPCServer.startServer(this);
     }
 
+    public void testDb() {
+        produceEvent();
 
+        EventsManager.getInstance(this).getAllLiveData().observeForever(new Observer<List<Event>>() {
+            @Override
+            public void onChanged(List<Event> events) {
+                Log.e("db_test", events.size() + "");
+                if (events.size() >= 50) {
+                    consumeEvent(events);
+                    //立即删除数据已经消费完的数据，防止重复消费
+                    EventsManager.getInstance(getApplicationContext()).deleteOldest(events.get(events.size() - 1).getUpdateTime());
+                }
+            }
+        });
+    }
 
+    int d = 0;
+    public void produceEvent(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep((long) (Math.random() * 100+200));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                EventsManager.getInstance(MainActivity.this).insert("第" + d++ + "条数据");
+                produceEvent();
+            }
+        }).start();
+    }
+
+    public void consumeEvent(List<Event> events) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep((long) (Math.random() * 2000 + 1000));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 
 }
